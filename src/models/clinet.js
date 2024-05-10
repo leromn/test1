@@ -12,7 +12,13 @@ const ClinetSchema = new mongoose.Schema({
   gender: {
     type: String,
     required: true,
-  },jobsJob
+  },
+  my_jobs_list: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Job",
+    },
+  ],
   // Add fields for driver ratings, license details, etc. (optional)
 });
 
