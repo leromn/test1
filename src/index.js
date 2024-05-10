@@ -26,7 +26,10 @@ app.use(bodyParser.json());
 // Routes
 app.get("/testJson", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
-  res.status(200).json({ message: "test success" });
+  res.status(200).json({ message: "Get test success" });
+});
+app.post("/testJson", async (req, res) => {
+  res.status(200).json({ message: req.body.test });
 });
 // Create clients and drivers
 app.post("/clients", async (req, res) => {
