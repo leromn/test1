@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
     rangeLE,
     route,
     number_of_drivers_needed,
-  } = req.query;
+  } = req.body;
   try {
     // Find client for validation
     // const client = await Client.findById(clientId);
