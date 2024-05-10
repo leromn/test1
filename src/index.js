@@ -8,10 +8,9 @@ var testRoutes = require("./routes");
 const Job = require("./models/job");
 const MONGODB_URI =
   "mongodb+srv://esraelasefa822:akZfVCD0snZnlBlZ@dil.uqd3gbq.mongodb.net/";
-const PORT = 3001;
 
 const app = express();
-const port = PORT || 3002;
+const port = process.env.PORT || 3002;
 
 // Connect to MongoDB
 mongoose
