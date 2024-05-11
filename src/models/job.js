@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 const JobSchema = new mongoose.Schema({
   ownerId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Client",
+    type: string,
     required: true,
   },
   description: {
@@ -44,7 +43,6 @@ const JobSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Open", "Assigned", "Completed", "Cancelled"],
     default: "Open",
   },
   number_of_drivers_needed: {
@@ -52,8 +50,7 @@ const JobSchema = new mongoose.Schema({
   },
   assigned_drivers_list: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Driver",
+      type: string,
     },
   ],
   created_at: {
