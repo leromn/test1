@@ -18,6 +18,7 @@ router.post("/", async (req, res) => {
     router,
     number_of_drivers_neededr,
   } = req.body;
+  console.log("body variables", req.body);
   try {
     const job = new Job({
       ownerId: ownerIdr,
@@ -118,6 +119,35 @@ router.post("/:id/complete", async (req, res) => {
     console.log(`Shipment ${shipmentId} marked as completed`);
 
     res.json(shipment);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get("/test", async (req, res) => {
+  try {
+    const job = new Job({
+      ownerId: "ownerIdr",
+      description: "descriptionr",
+      origin: "originr",
+      destination: "destinationr",
+      container_location: "container_locationr",
+      container_weight: 122,
+      estimated_cost: 333,
+      advance_payment: 555,
+      rangeLE: "rangeLEr",
+      route: "router",
+      status: "Open",
+      number_of_drivers_needed: 5,
+      assigned_drivers_list: [],
+    });
+
+    await job.save();
+
+    // Send notification to available drivers (implementation needed)
+    console.log(`job created: ${job._id}`);
+
+    res.json(job);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
