@@ -2,7 +2,7 @@ var express = require("express"),
   router = express.Router();
 const mongoose = require("mongoose");
 const Job = require("../models/job");
-
+//upload jobs to the database
 router.post("/", async (req, res) => {
   console.log("post /jobs endpoint accessed");
   const {
@@ -51,18 +51,21 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   console.log("/get jobs endpoint accessed");
 
-  // const { userId, role } = req.user; // Implement user authentication and store user data in req.user
+  var sortBy = req.query.sortBy;
   try {
     let filter = {};
-    // if (role === "client") {
-    //   filter = { client: userId };
-    // } else if (role === "driver") {
-    //   filter = { driver: null }; // Find unassigned shipments
-    // } else {
-    //   return res.status(403).json({ message: "Unauthorized access" });
-    // }
-    const jobs = await Job.find(filter);
-    res.json({ jobs: "working api" });
+    if (sortBy === "time") {
+      filter = { created_at: req.query.timeSort };
+    } else if (sortBy === "price") {
+      filter = { estimated_cost: req.query.priceSort };
+    } else if (sortBy === "both") {
+      filter = {
+        created_at: req.query.timeSort,
+        estimated_cost: req.query.priceSort,
+      };
+    }
+    const jobs = await Job.find({}, filter);
+    res.json({ jobs: jobs });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
