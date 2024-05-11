@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const JobSchema = new mongoose.Schema({
   ownerId: {
-    type: string,
+    type: String,
     required: true,
   },
   description: {
@@ -50,7 +50,7 @@ const JobSchema = new mongoose.Schema({
   },
   assigned_drivers_list: [
     {
-      type: string,
+      type: String,
     },
   ],
   created_at: {
