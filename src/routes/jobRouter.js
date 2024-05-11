@@ -19,21 +19,19 @@ router.post("/", async (req, res) => {
     number_of_drivers_needed,
   } = req.body;
   try {
-   
-
     const job = new Job({
-      ownerId,
-      description,
-      origin,
-      destination,
-      container_location,
-      container_weight,
-      estimated_cost,
-      advance_payment,
-      rangeLE,
-      route,
-      status: "pending",
-      number_of_drivers_needed,
+      ownerId: ownerId,
+      description: description,
+      origin: origin,
+      destination: destination,
+      container_location: container_location,
+      container_weight: container_weight,
+      estimated_cost: estimated_cost,
+      advance_payment: advance_payment,
+      rangeLE: rangeLE,
+      route: route,
+      status: "Open",
+      number_of_drivers_needed: number_of_drivers_needed,
       assigned_drivers_list: [],
     });
 
