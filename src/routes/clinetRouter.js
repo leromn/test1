@@ -30,23 +30,22 @@ router.post("/clients", async (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  const { username, password, role } = req.body;
+  const { full_name, phone_number, gender, password } = req.body;
 
-  if (!username || !password || !role) {
+  if (!full_name || !password || !phone_number) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
   const hashedPassword = await hashPassword(password);
 
   try {
-    let newUser;
-    if (role === "client") {
-      newUser = new Client({ username, password: hashedPassword });
-    } else if (role === "driver") {
-      newUser = new Driver({ username, password: hashedPassword });
-    } else {
-      return res.status(400).json({ message: "Invalid role" });
-    }
+    newUser = new Client({
+      full_name,
+      phone_number,
+      hashedPassword,
+      gender,
+      my_jobs_list: [],
+    });
 
     await newUser.save();
     res.json({ message: "Account created successfully" });
@@ -57,9 +56,9 @@ router.post("/register", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const { username, password, role } = req.body;
+  const { phone_number, password } = req.body;
 
-  if (!username || !password || !role) {
+  if (!phone_number || !password) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
