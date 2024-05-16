@@ -41,10 +41,10 @@ router.post("/register", async (req, res) => {
 
   try {
     newUser = new Client({
-      full_name,
-      phone_number,
+      full_name: full_name,
+      phone_number: phone_number,
       password: hashedPassword,
-      gender,
+      gender: gender,
       my_jobs_list: [],
     });
 
