@@ -20,7 +20,7 @@ const verifyToken = (req, res, next) => {
     return res.status(401).json({ message: "Invalid token" });
   }
 };
-app.get("/jobsTokenTest", verifyToken, async (req, res) => {
+router.get("/jobsTokenTest", verifyToken, async (req, res) => {
   try {
     res.json({ message: "token authenticated" });
   } catch (error) {

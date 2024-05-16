@@ -55,7 +55,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-app.post("/login", async (req, res) => {
+router.post("/login", async (req, res) => {
   const { phone_number, password, role } = req.body;
 
   if (!phone_number || !password) {
@@ -95,7 +95,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/loginTest", async (req, res) => {
+router.post("/loginTest", async (req, res) => {
   try {
     // Generate JWT token based on user role
     const payload = { userId: "user._id", role: "user.constructor.modelName " };
