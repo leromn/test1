@@ -2,6 +2,7 @@ var express = require("express"),
   router = express.Router();
 const mongoose = require("mongoose");
 const Job = require("../models/job");
+const jwt = require("jsonwebtoken");
 
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
