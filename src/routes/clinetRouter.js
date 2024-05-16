@@ -3,6 +3,7 @@ var express = require("express"),
 const mongoose = require("mongoose");
 const Client = require("../models/clinet");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const hashPassword = async (password) => {
   const salt = await bcrypt.genSalt(10);
