@@ -5,7 +5,7 @@ const Client = require("../models/clinet");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const salt = await bcrypt.genSalt(10);
+const salt = bcrypt.genSalt(10);
 const hashPassword = async (password) => {
   return await bcrypt.hash(password, salt);
 };
