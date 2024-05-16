@@ -5,8 +5,8 @@ const Client = require("../models/clinet");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const salt = await bcrypt.genSalt(10);
 const hashPassword = async (password) => {
-  const salt = await bcrypt.genSalt(10);
   return await bcrypt.hash(password, salt);
 };
 // Get all clients and drivers
@@ -43,7 +43,7 @@ router.post("/register", async (req, res) => {
     newUser = new Client({
       full_name,
       phone_number,
-      hashedPassword,
+      password: hashedPassword,
       gender,
       my_jobs_list: [],
     });
