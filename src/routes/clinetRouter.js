@@ -56,7 +56,7 @@ router.post("/register", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  const { phone_number, password } = req.body;
+  const { phone_number, password, role } = req.body;
 
   if (!phone_number || !password) {
     return res.status(400).json({ message: "Missing required fields" });
@@ -85,6 +85,20 @@ app.post("/login", async (req, res) => {
 
     // Generate JWT token based on user role
     const payload = { userId: user._id, role: user.constructor.modelName };
+    const secretKey = process.env.JWT_SECRET; // Replace with a strong secret key (environment variable)
+    const token = jwt.sign(payload, secretKey);
+
+    res.json({ message: "Login successful", token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+app.post("/loginTest", async (req, res) => {
+  try {
+    // Generate JWT token based on user role
+    const payload = { userId: "user._id", role: "user.constructor.modelName " };
     const secretKey = process.env.JWT_SECRET; // Replace with a strong secret key (environment variable)
     const token = jwt.sign(payload, secretKey);
 
