@@ -1,6 +1,5 @@
 var express = require("express"),
   router = express.Router();
-const mongoose = require("mongoose");
 const Client = require("../models/clinet");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -29,7 +28,7 @@ router.post("/register", async (req, res) => {
     });
 
     await newUser.save();
-    res.json({ message: "Account created successfully" });
+    res.json({ message: "Client Account created successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -59,7 +58,7 @@ router.post("/login", async (req, res) => {
     const secretKey = process.env.JWT_SECRET; // Replace with a strong secret key (environment variable)
     const token = jwt.sign(payload, secretKey);
 
-    res.json({ message: "Login successful", token });
+    res.json({ message: "client Login successful", token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

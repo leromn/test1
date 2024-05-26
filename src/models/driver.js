@@ -17,6 +17,10 @@ const DriverSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  password: {
+    type: String,
+    required: true,
+  },
   front_license_number: {
     type: String,
     // required: true,
