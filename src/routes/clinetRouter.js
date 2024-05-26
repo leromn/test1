@@ -5,35 +5,15 @@ const Client = require("../models/clinet");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-const salt = bcrypt.genSalt(10);
 const hashPassword = async (password) => {
+  const salt = bcrypt.genSalt(10);
   return await bcrypt.hash(password, salt);
 };
-// Get all clients and drivers
-router.get("/clients", async (req, res) => {
-  try {
-    const clients = await Client.find();
-    res.json(clients);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-// Create clients and drivers
-router.post("/clients", async (req, res) => {
-  try {
-    const client = new Client(req.body);
-    await client.save();
-    res.json(client);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
 
 router.post("/register", async (req, res) => {
   const { full_name, phone_number, gender, password } = req.body;
 
-  if (!full_name || !password || !phone_number) {
+  if (!full_name || !password || !phone_number || !password) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
@@ -57,27 +37,17 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const { phone_number, password, role } = req.body;
+  const { phone_number, password } = req.body;
 
   if (!phone_number || !password) {
     return res.status(400).json({ message: "Missing required fields" });
   }
 
   try {
-    let collection;
-    if (role === "client") {
-      collection = Client;
-    } else if (role === "driver") {
-      collection = Driver;
-    } else {
-      return res.status(400).json({ message: "Invalid role" });
-    }
-
-    const user = await collection.findOne({ username });
+    const user = await Client.findOne({ username });
     if (!user) {
       return res.status(401).json({ message: "Invalid username or password" });
     }
-
     // Verify password using bcrypt
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
