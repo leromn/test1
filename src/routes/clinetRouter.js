@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
   }
 
   try {
-    const user = await Client.findOne({ username });
+    const user = await Client.findOne({ phone_number: phone_number });
     if (!user) {
       return res.status(401).json({ message: "Invalid username or password" });
     }
