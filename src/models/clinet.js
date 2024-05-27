@@ -19,8 +19,14 @@ const ClinetSchema = new mongoose.Schema({
   },
   my_jobs_list: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Job",
+      job_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Job",
+      },
+      job_title: {
+        type: String,
+        required: true,
+      },
     },
   ],
   // Add fields for driver ratings, license details, etc. (optional)

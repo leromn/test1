@@ -33,7 +33,7 @@ router.get("/jobsTokenTest", verifyToken, async (req, res) => {
 router.post("/", async (req, res) => {
   console.log("post /jobs endpoint accessed");
   const {
-    ownerId,
+    ownerIdt,
     description,
     origin,
     destination,
@@ -50,6 +50,7 @@ router.post("/", async (req, res) => {
     const job = new Job({
       ownerId: ownerId,
       description: description,
+      title: title,
       origin: origin,
       destination: destination,
       container_location: container_location,
@@ -67,6 +68,10 @@ router.post("/", async (req, res) => {
 
     // Send notification to available drivers (implementation needed)
     console.log(`job created: ${job._id}`);
+    // store the job id on the owner client database jobs
+    const user = await Client.findOne({ _id: ownerId });
+    user.my_jobs_list.push({ job_id: job._id, job_title: job.title });
+    user.save();
 
     res.json(job);
   } catch (err) {
@@ -77,7 +82,8 @@ router.post("/", async (req, res) => {
 // Get Shipments (client or driver perspective - needs authorization)
 router.get("/", async (req, res) => {
   console.log("/get jobs endpoint accessed");
-
+  // sort values are
+  // 1 Sort ascending.    -1 Sort descending.
   var sortBy = req.query.sortBy;
   try {
     let filter = {};
