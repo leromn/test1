@@ -1,7 +1,8 @@
 var express = require("express"),
   router = express.Router();
-const mongoose = require("mongoose");
 const Job = require("../models/job");
+const Driver = require("../models/driver");
+
 const jwt = require("jsonwebtoken");
 
 const verifyToken = (req, res, next) => {
@@ -61,7 +62,7 @@ router.post("/", async (req, res) => {
       route: route,
       status: "Open",
       number_of_drivers_needed: number_of_drivers_needed,
-      assigned_drivers_list: [],
+      shipment_drivers_list: [],
     });
 
     await job.save();
@@ -104,28 +105,44 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Assign driver to shipment (admin or client with permission)
-router.post("/:id/assign", async (req, res) => {
+//  driver Apply to shipment (admin or client with permission)
+router.post("/:id/apply", async (req, res) => {
   const { driverId } = req.body;
-  const shipmentId = req.params.id;
+  const jobId = req.params.id;
   try {
-    const shipment = await Shipment.findByIdAndUpdate(
-      shipmentId,
+    const job = await Job.findByIdAndUpdate(
+      jobId,
       {
-        driver: driverId,
-        status: "assigned",
+        $push: {
+          shipment_drivers_list: {
+            driver: driverId,
+            status: "assigned",
+          },
+        },
       },
-      { new: true },
-    ); // Return the updated document
+      { new: true }, // Return the updated document
+    );
+    const driverUpdate = await Driver.findByIdAndUpdate(
+      driverId,
+      {
+        $push: {
+          job_applications: {
+            driver: jobId,
+            status: "assigned",
+          },
+        },
+      },
+      { new: true }, // Return the updated document
+    );
 
-    if (!shipment) {
-      return res.status(404).json({ message: "Shipment not found" });
+    if (!job) {
+      return res.status(404).json({ message: "job not found" });
     }
 
     // Send notification to assigned driver (implementation needed)
-    console.log(`Driver assigned to shipment ${shipmentId}`);
+    console.log(`Driver assigned to shipment ${jobId}`);
 
-    res.json(shipment);
+    res.json(job);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

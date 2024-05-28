@@ -43,7 +43,6 @@ const JobSchema = new mongoose.Schema({
   },
   route: {
     type: String,
-    // required: true,
   },
   status: {
     type: String,
@@ -51,10 +50,16 @@ const JobSchema = new mongoose.Schema({
   },
   number_of_drivers_needed: {
     type: Number,
+    required: true,
   },
-  assigned_drivers_list: [
+  shipment_drivers_list: [
     {
-      type: String,
+      driver_id: {
+        type: String,
+      },
+      driver_status: {
+        type: String,
+      },
     },
   ],
   created_at: {

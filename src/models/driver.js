@@ -35,6 +35,16 @@ const DriverSchema = new mongoose.Schema({
     //single vs double
     type: String,
   },
+  job_applications: [
+    {
+      job_id: {
+        type: String,
+      },
+      application_status: {
+        type: String,
+      },
+    },
+  ],
   // Add fields for driver ratings, license details, etc. (optional)
 });
 
