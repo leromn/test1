@@ -4,13 +4,21 @@ const JobSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  description: {
-    type: String,
-    required: true,
-  },
   title: {
     type: String,
     required: true,
+  },
+  text_description: {
+    type: String,
+    required: true,
+  },
+  audio_description: {
+    data: {
+      type: Buffer,
+    },
+    content_type: {
+      type: String,
+    },
   },
   origin: {
     type: String,

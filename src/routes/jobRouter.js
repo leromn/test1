@@ -3,6 +3,9 @@ var express = require("express"),
 const Job = require("../models/job");
 const Driver = require("../models/driver");
 
+const multer = require("multer");
+const upload = multer({ dest: "../../uploads" });
+
 const jwt = require("jsonwebtoken");
 
 const verifyToken = (req, res, next) => {
@@ -31,11 +34,15 @@ router.get("/jobsTokenTest", verifyToken, async (req, res) => {
   }
 });
 //upload jobs to the database
-router.post("/", async (req, res) => {
+router.post("/", upload.single("audio"), async (req, res) => {
   console.log("post /jobs endpoint accessed");
+  const { originalname, path } = req.file;
+  const audioData = fs.readFileSync(path);
+  const contentType = req.file.mimetype;
+
   const {
-    ownerIdt,
-    description,
+    ownerId,
+    text_description,
     origin,
     destination,
     container_location,
@@ -47,10 +54,15 @@ router.post("/", async (req, res) => {
     number_of_drivers_needed,
   } = req.body;
   console.log("body variables", req.body);
+
   try {
     const job = new Job({
       ownerId: ownerId,
-      description: description,
+      text_description: text_description,
+      audio_description: {
+        data: audioData,
+        content_type: contentType,
+      },
       title: title,
       origin: origin,
       destination: destination,
