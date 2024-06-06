@@ -29,7 +29,12 @@ const DriverSchema = new mongoose.Schema({
     type: String,
   },
   driving_license_Image: {
-    type: Buffer,
+    data: {
+      type: Buffer,
+    },
+    content_type: {
+      type: String,
+    },
   },
   lorry_type: {
     //single vs double

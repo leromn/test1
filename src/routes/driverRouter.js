@@ -4,6 +4,9 @@ const Driver = require("../models/driver");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
+
 const hashPassword = async (password) => {
   const salt = await bcrypt.genSalt(10);
   return await bcrypt.hash(password, salt);
@@ -65,4 +68,25 @@ router.post("/login", async (req, res) => {
   }
 });
 
+app.post("/:id/profile-image", upload.single("image"), async (req, res) => {
+  try {
+    const { originalname, path } = req.file;
+    const imageFsData = fs.readFileSync(path);
+    const contentType = req.file.mimetype;
+
+    const userId = req.params.id;
+    const imageData = {
+      data: imageFsData,
+      contentType: contentType,
+    };
+
+    // Update the user document with the image data
+    await User.findByIdAndUpdate(userId, { profileImage: imageData });
+
+    res.status(200).send("liscence Image uploaded successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred");
+  }
+});
 module.exports = router;
