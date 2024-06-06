@@ -92,8 +92,8 @@ router.post("/", upload.single("audio"), async (req, res) => {
   }
 });
 
-// Get Shipments (client or driver perspective - needs authorization)
-router.get("/", async (req, res) => {
+// Get all Shipments (client or driver perspective - needs authorization)
+router.get("/all", async (req, res) => {
   console.log("/get jobs endpoint accessed");
   // sort values are
   // 1 Sort ascending.    -1 Sort descending.
@@ -110,7 +110,12 @@ router.get("/", async (req, res) => {
         estimated_cost: req.query.priceSort,
       };
     }
-    const jobs = await Job.find({}, filter);
+    // include in selection
+    const selection = {
+      projection: { shipment_drivers_list: 0, audio_description: 0 },
+    };
+    // const result = await collection.find({}, { projection: { field1: 1, field2: 1 } })
+    const jobs = await Job.find({}, selection).sort(filter);
     res.json({ jobs: jobs });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -146,7 +151,7 @@ router.post("/:id/apply", async (req, res) => {
       },
       { new: true }, // Return the updated document
     );
-
+    // driverUpdate.save();
     if (!job) {
       return res.status(404).json({ message: "job not found" });
     }
