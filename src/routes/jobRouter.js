@@ -92,6 +92,22 @@ router.post("/", upload.single("audio"), async (req, res) => {
   }
 });
 
+// get a specific shipment detail
+router.get("/:id/get-job-detail", async (req, res) => {
+  try {
+    const jobId = req.params.id;
+    const job = await Driver.findById(jobId);
+    if (!job) {
+      res.status(400).send("job not found");
+      return;
+    }
+
+    res.json(job).status(200).send(" job detail fetch successful");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred");
+  }
+});
 // Get all Shipments (client or driver perspective - needs authorization)
 router.get("/all", async (req, res) => {
   console.log("/get jobs endpoint accessed");
