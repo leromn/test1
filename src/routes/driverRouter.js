@@ -68,6 +68,22 @@ router.post("/login", async (req, res) => {
   }
 });
 
+router.get("/:id/get-driver-profile", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await Driver.findById(userId);
+    if (!user) {
+      res.status(400).send("user not found");
+      return;
+    }
+
+    res.json(user).status(200).send(" person detail fetch successful");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred");
+  }
+});
+
 router.post("/:id/profile-image", upload.single("image"), async (req, res) => {
   try {
     const { originalname, path } = req.file;
@@ -99,7 +115,7 @@ function convertBufferToImage(buffer, fileExtension, id) {
   console.log(`Image file "${filePath}" created successfully.`);
 }
 
-router.get("/:id/profile-image", upload.single("image"), async (req, res) => {
+router.get("/:id/driving-licence", upload.single("image"), async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await User.findById(userId);
@@ -124,4 +140,33 @@ router.get("/:id/profile-image", upload.single("image"), async (req, res) => {
     res.status(500).send("An error occurred");
   }
 });
+
+router.post(
+  "/:id/driving-licence",
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      const { originalname, path } = req.file;
+      const imageFsData = fs.readFileSync(path);
+      const contentType = req.file.mimetype;
+
+      const userId = req.params.id;
+      const imageData = {
+        data: imageFsData,
+        contentType: contentType,
+      };
+
+      // Update the user document with the image data
+      await User.findByIdAndUpdate(userId, {
+        driving_license_Image: imageData,
+      });
+
+      res.status(200).send("liscence Image uploaded successfully");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("An error occurred");
+    }
+  },
+);
+
 module.exports = router;
