@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-var testRoutes = require("./routes");
+var TestRoutes = require("./routes/testRouter");
 var JobRouter = require("./routes/jobRouter");
 var ClientRouter = require("./routes/clinetRouter");
 var DriverRouter = require("./routes/driverRouter");
@@ -16,12 +16,12 @@ const app = express();
 const port = process.env.PORT || 3002;
 
 // Connect to MongoDB
-mongoose
-  .connect(MONGODB_URI, {
-    dbName: "DIL",
-  })
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.error(err));
+// mongoose
+//   .connect(MONGODB_URI, {
+//     dbName: "DIL",
+//   })
+//   .then(() => console.log("MongoDB connected"))
+//   .catch((err) => console.error(err));
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
@@ -42,7 +42,7 @@ app.use((err, req, res, next) => {
 });
 
 //routers
-app.use("/", testRoutes);
+app.use("/", TestRoutes);
 app.use("/job", JobRouter);
 app.use("/client", ClientRouter);
 app.use("/driver", DriverRouter);

@@ -68,7 +68,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-app.post("/:id/profile-image", upload.single("image"), async (req, res) => {
+router.post("/:id/profile-image", upload.single("image"), async (req, res) => {
   try {
     const { originalname, path } = req.file;
     const imageFsData = fs.readFileSync(path);
@@ -84,6 +84,41 @@ app.post("/:id/profile-image", upload.single("image"), async (req, res) => {
     await User.findByIdAndUpdate(userId, { profileImage: imageData });
 
     res.status(200).send("liscence Image uploaded successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred");
+  }
+});
+
+function convertBufferToImage(buffer, fileExtension, id) {
+  const filename = `${id}.${fileExtension}`;
+  const filePath = path.join(__dirname, "images", filename);
+
+  fs.writeFileSync(filePath, buffer, { encoding: "base64" });
+
+  console.log(`Image file "${filePath}" created successfully.`);
+}
+
+router.get("/:id/profile-image", upload.single("image"), async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+    if (!user && !user.profileImage) {
+      return;
+    }
+    const { data, contentType } = user.profileImage;
+    const fileExtension = contentType.split("/")[1];
+    convertBufferToImage(data, fileExtension, userId);
+    // Set the headers for the download prompt
+    res.setHeader("Content-disposition", "attachment; filename=newimage.jpg");
+    res.setHeader("Content-type", "image/jpeg");
+
+    // Stream the file to the response
+    const filePath = path.join(__dirname, "images", `${id}.${fileExtension}`); //change name of each downloaded image to the appropriate user and type of image
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+
+    res.status(200).send(" Image download successfully");
   } catch (error) {
     console.error(error);
     res.status(500).send("An error occurred");
