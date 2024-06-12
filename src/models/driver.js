@@ -40,6 +40,16 @@ const DriverSchema = new mongoose.Schema({
     //single vs double
     type: String,
   },
+  payment_methods: [
+    {
+      payment_type: {
+        type: String,
+      },
+      payment_number: {
+        type: String,
+      },
+    },
+  ],
   job_applications: [
     {
       job_id: {

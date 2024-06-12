@@ -169,4 +169,26 @@ router.post(
   },
 );
 
+router.post("/add_payment_method", async (req, res) => {
+  const { driverId, p_type, p_number } = req.body;
+
+  try {
+    const driver = await Driver.findByIdAndUpdate(
+      driverId,
+      {
+        $push: {
+          payment_methods: {
+            payment_type: p_type,
+            payment_number: p_number,
+          },
+        },
+      },
+      { new: true }, // Return the updated document
+    );
+    res.status(200).send("payment method added successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred");
+  }
+});
 module.exports = router;
