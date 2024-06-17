@@ -16,12 +16,12 @@ const app = express();
 const port = process.env.PORT || 3002;
 
 // Connect to MongoDB
-// mongoose
-//   .connect(MONGODB_URI, {
-//     dbName: "DIL",
-//   })
-//   .then(() => console.log("MongoDB connected"))
-//   .catch((err) => console.error(err));
+mongoose
+  .connect(MONGODB_URI, {
+    dbName: "DIL",
+  })
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error(err));
 // Middleware
 app.use(cors());
 app.use(bodyParser.json());
