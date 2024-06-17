@@ -2,6 +2,7 @@ var express = require("express"),
   router = express.Router();
 const Job = require("../models/job");
 const Driver = require("../models/driver");
+const TokenAuth = require("../middlware/tokenAuth").verifyToken;
 
 const multer = require("multer");
 const upload = multer({ dest: "../../uploads" });
@@ -109,7 +110,7 @@ router.get("/:id/get-job-detail", async (req, res) => {
   }
 });
 // Get all Shipments (client or driver perspective - needs authorization)
-router.get("/all", async (req, res) => {
+router.get("/all", TokenAuth, async (req, res) => {
   console.log("/get jobs endpoint accessed");
   // sort values are
   // 1 Sort ascending.    -1 Sort descending.
