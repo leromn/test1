@@ -10,15 +10,15 @@ const hashPassword = async (password) => {
 };
 
 router.post("/register", async (req, res) => {
-  const { full_name, phone_number, gender, password } = req.body;
-
-  if (!full_name || !password || !phone_number || !password) {
-    return res.status(400).json({ message: "Missing required fields" });
-  }
-
-  const hashedPassword = await hashPassword(password);
-
   try {
+    const { full_name, phone_number, gender, password } = req.body;
+
+    if (!full_name || !password || !phone_number || !password) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const hashedPassword = await hashPassword(password);
+
     newUser = new Client({
       full_name: full_name,
       phone_number: phone_number,
@@ -36,13 +36,13 @@ router.post("/register", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-  const { phone_number, password } = req.body;
-
-  if (!phone_number || !password) {
-    return res.status(400).json({ message: "Missing required fields" });
-  }
-
   try {
+    const { phone_number, password } = req.body;
+
+    if (!phone_number || !password) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
     const user = await Client.findOne({ phone_number: phone_number });
     if (!user) {
       return res.status(401).json({ message: "Invalid username or password" });
