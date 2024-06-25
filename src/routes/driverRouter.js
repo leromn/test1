@@ -165,11 +165,11 @@ router.post("/driving-licence", upload.single("image"), async (req, res) => {
 
     // Update the user document with the image data
     if (imageFace == "front") {
-      await User.findByIdAndUpdate(userId, {
+      await Driver.findByIdAndUpdate(userId, {
         front_driving_license_Image: imageData,
       });
     } else if (imageFace == "back") {
-      await User.findByIdAndUpdate(userId, {
+      await Driver.findByIdAndUpdate(userId, {
         back_driving_license_Image: imageData,
       });
     } else {
