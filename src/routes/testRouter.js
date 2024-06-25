@@ -34,4 +34,8 @@ router.get("/download", (req, res) => {
   const fileStream = fs.createReadStream(filePath2);
   fileStream.pipe(res);
 });
+
+router.get("/wakeUp", (req, res) => {
+  console.log("server has woken up");
+});
 module.exports = router;

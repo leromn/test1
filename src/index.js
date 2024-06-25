@@ -14,6 +14,7 @@ const MONGODB_URI =
 
 const app = express();
 const port = process.env.PORT || 3002;
+const AppVersion = process.env.VERSION;
 
 // Connect to MongoDB
 mongoose

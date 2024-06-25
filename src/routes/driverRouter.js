@@ -3,6 +3,7 @@ var express = require("express"),
 const Driver = require("../models/driver");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const CurrentAppVersion = process.env.VERSION;
 
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
@@ -40,7 +41,11 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
-    const { phone_number, password } = req.body;
+    const { phone_number, password, clientVersion } = req.body;
+
+    // if (!clientVersion==CurrentAppVersion) {
+    //   return res.status(400).json({ message: "upgrade the app to the latest version" });
+    // }
 
     if (!phone_number || !password) {
       return res.status(400).json({ message: "Missing required fields" });
@@ -141,33 +146,39 @@ router.get("/:id/driving-licence", upload.single("image"), async (req, res) => {
   }
 });
 
-router.post(
-  "/:id/driving-licence",
-  upload.single("image"),
-  async (req, res) => {
-    try {
-      const { originalname, path } = req.file;
-      const imageFsData = fs.readFileSync(path);
-      const contentType = req.file.mimetype;
+router.post("/driving-licence", upload.single("image"), async (req, res) => {
+  try {
+    const { originalname, path } = req.file;
+    const imageFsData = fs.readFileSync(path);
+    const contentType = req.file.mimetype;
 
-      const userId = req.params.id;
-      const imageData = {
-        data: imageFsData,
-        contentType: contentType,
-      };
+    const userId = req.body.driverId;
+    const imageFace = req.body.face;
 
-      // Update the user document with the image data
+    const imageData = {
+      data: imageFsData,
+      contentType: contentType,
+    };
+
+    // Update the user document with the image data
+    if (imageFace == "front") {
       await User.findByIdAndUpdate(userId, {
-        driving_license_Image: imageData,
+        front_driving_license_Image: imageData,
       });
-
-      res.status(200).send("liscence Image uploaded successfully");
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("An error occurred");
+    } else if (imageFace == "front") {
+      await User.findByIdAndUpdate(userId, {
+        back_driving_license_Image: imageData,
+      });
+    } else {
+      res.status(500).send("provide the image face");
     }
-  },
-);
+
+    res.status(200).send("liscence Image uploaded successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred");
+  }
+});
 
 router.post("/add_payment_method", async (req, res) => {
   const { driverId, p_type, p_number } = req.body;
