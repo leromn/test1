@@ -5,6 +5,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const CurrentAppVersion = process.env.VERSION;
 
+const fs = require("fs");
+const path = require("path");
+
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 
@@ -41,7 +44,7 @@ router.post("/register", async (req, res) => {
 
 router.post("/login", async (req, res) => {
   try {
-    const { phone_number, password, clientVersion } = req.body;
+    const { phone_number, password } = req.body;
 
     // if (!clientVersion==CurrentAppVersion) {
     //   return res.status(400).json({ message: "upgrade the app to the latest version" });
@@ -66,7 +69,7 @@ router.post("/login", async (req, res) => {
     const secretKey = process.env.JWT_SECRET; // Replace with a strong secret key (environment variable)
     const token = jwt.sign(payload, secretKey);
 
-    res.json({ message: "Driver Login successful", token });
+    res.json({ message: "Driver Login successful", token, user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
