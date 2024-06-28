@@ -54,7 +54,9 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
 
-    const user = await Driver.findOne({ phone_number: phone_number });
+    const user = await Driver.findOne({ phone_number: phone_number }).select(
+      "-back_driving_license_Image -front_driving_license_Image",
+    );
     if (!user) {
       return res.status(401).json({ message: "Invalid username or password" });
     }
@@ -123,14 +125,14 @@ function convertBufferToImage(buffer, fileExtension, id) {
   console.log(`Image file "${filePath}" created successfully.`);
 }
 
-router.get("/:id/driving-licence", upload.single("image"), async (req, res) => {
+router.get("/:id/driving-licence", async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await User.findById(userId);
+    const user = await Driver.findById(userId);
     if (!user && !user.profileImage) {
       return;
     }
-    const { data, contentType } = user.profileImage;
+    const { data, contentType } = user.front_driving_license_Image;
     const fileExtension = contentType.split("/")[1];
     convertBufferToImage(data, fileExtension, userId);
     // Set the headers for the download prompt
@@ -148,6 +150,25 @@ router.get("/:id/driving-licence", upload.single("image"), async (req, res) => {
     res.status(500).send("An error occurred");
   }
 });
+router.get("/test-driving-licence", async (req, res) => {
+  try {
+    const user = await Driver.findById("66708779eb20a07225f29d16");
+
+    const { data, contentType } = user.front_driving_license_Image;
+    const fileExtension = contentType.split("/")[1];
+    convertBufferToImage(data, fileExtension, userId);
+    // Set the headers for the download prompt
+    res.setHeader("Content-disposition", "attachment; filename=newimage.jpg");
+    res.setHeader("Content-type", "image/jpeg");
+
+    // Stream the file to the response
+    const filePath = path.join(__dirname, "images", `${id}.${fileExtension}`); //change name of each downloaded image to the appropriate user and type of image
+    res.status(200).send(filePath);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred");
+  }
+});
 
 router.post("/driving-licence", upload.single("image"), async (req, res) => {
   try {
@@ -160,7 +181,7 @@ router.post("/driving-licence", upload.single("image"), async (req, res) => {
 
     const imageData = {
       data: imageFsData,
-      contentType: contentType,
+      content_type: contentType,
     };
 
     // Update the user document with the image data
