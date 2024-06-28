@@ -127,7 +127,7 @@ function convertBufferToImage(buffer, fileExtension, id) {
 
 router.get("/:id/driving-licence", async (req, res) => {
   try {
-    const userId = req.params.id;
+    const userId = "66708779eb20a07225f29d16";
     const user = await Driver.findById(userId);
     if (!user && !user.profileImage) {
       return;
@@ -175,6 +175,7 @@ router.post("/driving-licence", upload.single("image"), async (req, res) => {
     const { originalname, path } = req.file;
     const imageFsData = fs.readFileSync(path);
     const contentType = req.file.mimetype;
+    console.log("content type ", contentType);
 
     const userId = req.body.driverId;
     const imageFace = req.body.face;
