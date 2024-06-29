@@ -55,7 +55,7 @@ router.post("/login", async (req, res) => {
     }
 
     const user = await Driver.findOne({ phone_number: phone_number }).select(
-      "-back_driving_license_Image -front_driving_license_Image",
+      "-back_driving_license_image -front_driving_license_image -profile_image",
     );
     if (!user) {
       return res.status(401).json({ message: "Invalid username or password" });
@@ -125,21 +125,38 @@ function convertBufferToImage(buffer, fileExtension, id) {
   console.log(`Image file "${filePath}" created successfully.`);
 }
 
-router.get("/:id/driving-licence", async (req, res) => {
+router.get("/:id/driving-licence/:image_face", async (req, res) => {
   try {
-    const userId = "66531249728ee6aec8d95e24";
-    const userId2 = req.params.id;
+    // const userId = "66531249728ee6aec8d95e24";
+    const userId = req.params.id;
+    const imageFace = req.params.image_face;
 
     const user = await Driver.findById(userId);
     if (!user) {
+      res.status(500).send("no user with this id");
       return;
     }
-    const bufferData = user.front_driving_license_image.data;
-    const contentType = user.front_driving_license_image.content_type;
+    let bufferData, contentType;
+    // Check if the image face is front or back
+    if (imageFace == "front") {
+      bufferData = user.front_driving_license_image.data;
+      contentType = user.front_driving_license_image.content_type;
+    } else if (imageFace == "back") {
+      bufferData = user.back_driving_license_image.data;
+      contentType = user.back_driving_license_image.content_type;
+    } else {
+      // Invalid image face value
+      res.status(400).send("Invalid image face value");
+    }
+
     const fileExtension = contentType.split("/")[1];
     convertBufferToImage(bufferData, fileExtension, userId);
     // Set the headers for the download prompt
-    res.setHeader("Content-disposition", "attachment; filename=newimage.jpg");
+
+    res.setHeader(
+      "Content-disposition",
+      "attachment; filename=${imagename}.jpg",
+    );
     res.setHeader("Content-type", "image/jpeg");
 
     // Set the appropriate headers for the image response
