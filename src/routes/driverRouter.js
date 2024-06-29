@@ -127,43 +127,29 @@ function convertBufferToImage(buffer, fileExtension, id) {
 
 router.get("/:id/driving-licence", async (req, res) => {
   try {
-    const userId = "66708779eb20a07225f29d16";
+    const userId = "667018d1208236c253b2d862";
     const user = await Driver.findById(userId);
-    if (!user && !user.profileImage) {
+    if (!user) {
       return;
     }
-    const { data, contentType } = user.front_driving_license_Image;
+    const bufferData = await Buffer.from(user.back_driving_license_image.data);
+    const contentType = user.front_driving_license_image.content_type;
     const fileExtension = contentType.split("/")[1];
-    convertBufferToImage(data, fileExtension, userId);
+    convertBufferToImage(bufferData, fileExtension, userId);
     // Set the headers for the download prompt
     res.setHeader("Content-disposition", "attachment; filename=newimage.jpg");
     res.setHeader("Content-type", "image/jpeg");
 
     // Stream the file to the response
-    const filePath = path.join(__dirname, "images", `${id}.${fileExtension}`); //change name of each downloaded image to the appropriate user and type of image
+    const filePath = path.join(
+      __dirname,
+      "images",
+      `${userId}.${fileExtension}`,
+    ); //change name of each downloaded image to the appropriate user and type of image
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(res);
 
     res.status(200).send(" Image download successfully");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("An error occurred");
-  }
-});
-router.get("/test-driving-licence", async (req, res) => {
-  try {
-    const user = await Driver.findById("66708779eb20a07225f29d16");
-
-    const { data, contentType } = user.front_driving_license_Image;
-    const fileExtension = contentType.split("/")[1];
-    convertBufferToImage(data, fileExtension, userId);
-    // Set the headers for the download prompt
-    res.setHeader("Content-disposition", "attachment; filename=newimage.jpg");
-    res.setHeader("Content-type", "image/jpeg");
-
-    // Stream the file to the response
-    const filePath = path.join(__dirname, "images", `${id}.${fileExtension}`); //change name of each downloaded image to the appropriate user and type of image
-    res.status(200).send(filePath);
   } catch (error) {
     console.error(error);
     res.status(500).send("An error occurred");
@@ -188,11 +174,11 @@ router.post("/driving-licence", upload.single("image"), async (req, res) => {
     // Update the user document with the image data
     if (imageFace == "front") {
       await Driver.findByIdAndUpdate(userId, {
-        front_driving_license_Image: imageData,
+        front_driving_license_image: imageData,
       });
     } else if (imageFace == "back") {
       await Driver.findByIdAndUpdate(userId, {
-        back_driving_license_Image: imageData,
+        back_driving_license_image: imageData,
       });
     } else {
       res.status(500).send("provide the image face");
