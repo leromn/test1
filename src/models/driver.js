@@ -21,20 +21,27 @@ const DriverSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  ////////////////////////////////////////////////////////////////////////////////
+
+  identity_verified: {
+    type: Boolean,
+    default: false,
+  },
+  vehicle_added: {
+    type: Boolean,
+    default: false,
+  },
+  ////////////////////////////////////////////////////////////////////////////////
+  lorry_type: {
+    //single vs double
+    type: String,
+  },
   front_license_number: {
     type: String,
     // required: true,
   },
   back_license_number: {
     type: String,
-  },
-  profile_image: {
-    data: {
-      type: Buffer,
-    },
-    content_type: {
-      type: String,
-    },
   },
   front_driving_license_image: {
     data: {
@@ -52,9 +59,22 @@ const DriverSchema = new mongoose.Schema({
       type: String,
     },
   },
-  lorry_type: {
-    //single vs double
-    type: String,
+  profile_image: {
+    data: {
+      type: Buffer,
+    },
+    content_type: {
+      type: String,
+    },
+  },
+  ////////////////////////////////////////////////////////////////////////////////
+  total_balance: {
+    type: Number,
+    default: 0,
+  },
+  rating: {
+    type: Number,
+    default: 0,
   },
   payment_methods: [
     {
@@ -71,8 +91,13 @@ const DriverSchema = new mongoose.Schema({
       job_id: {
         type: String,
       },
-      application_status: {
+      job_status: {
+        ///acceptable values : enrolled,rejected,completed
         type: String,
+      },
+      payment_completed: {
+        type: Boolean,
+        default: false,
       },
     },
   ],
