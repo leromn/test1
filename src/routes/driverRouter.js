@@ -81,13 +81,41 @@ router.post("/login", async (req, res) => {
 router.get("/:id/get-driver-profile", async (req, res) => {
   try {
     const userId = req.params.id;
-    const user = await Driver.findById(userId);
+    const user = await Driver.findById(userId).select("profile_image _id");
     if (!user) {
-      res.status(400).send("user not found");
+      res.status(500).send("no user with this id");
+      return;
+    } else if (!user.profile_image.data) {
+      res.status(400).send("no profile picture");
       return;
     }
+    let bufferData, contentType;
+    // Check if the image face is front or back
+    bufferData = user.profile_image.data;
+    contentType = user.profile_image.content_type;
 
-    res.json(user).status(200).send(" person detail fetch successful");
+    const fileExtension = contentType.split("/")[1];
+    convertBufferToImage(bufferData, fileExtension, userId);
+    // Set the headers for the download prompt
+
+    res.setHeader(
+      "Content-disposition",
+      "attachment; filename=${imagename}.${fileExtension}",
+    );
+
+    // Set the appropriate headers for the image response
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Content-Disposition", "inline");
+
+    // Stream the file to the response
+    const imagePath = path.join(
+      __dirname,
+      "images",
+      `${userId}.${fileExtension}`,
+    ); //change name of each downloaded image to the appropriate user and type of image
+    res.sendFile(imagePath);
+
+    // res.status(200).send(" Image download successfully");
   } catch (error) {
     console.error(error);
     res.status(500).send("An error occurred");
@@ -99,17 +127,19 @@ router.post("/:id/profile-image", upload.single("image"), async (req, res) => {
     const { originalname, path } = req.file;
     const imageFsData = fs.readFileSync(path);
     const contentType = req.file.mimetype;
+    const userId = req.body.driverId;
 
-    const userId = req.params.id;
     const imageData = {
       data: imageFsData,
-      contentType: contentType,
+      content_type: contentType,
     };
 
     // Update the user document with the image data
-    await User.findByIdAndUpdate(userId, { profileImage: imageData });
+    await Driver.findByIdAndUpdate(userId, {
+      profile_image: imageData,
+    });
 
-    res.status(200).send("liscence Image uploaded successfully");
+    res.status(200).send("Profile Image uploaded successfully");
   } catch (error) {
     console.error(error);
     res.status(500).send("An error occurred");
@@ -155,12 +185,10 @@ router.get("/:id/driving-licence/:image_face", async (req, res) => {
 
     res.setHeader(
       "Content-disposition",
-      "attachment; filename=${imagename}.jpg",
+      "attachment; filename=${imagename}.${fileExtension}",
     );
-    res.setHeader("Content-type", "image/jpeg");
 
-    // Set the appropriate headers for the image response
-    res.setHeader("Content-Type", "image/jpeg");
+    res.setHeader("Content-type", contentType);
     res.setHeader("Content-Disposition", "inline");
 
     // Stream the file to the response
