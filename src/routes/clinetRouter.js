@@ -79,4 +79,24 @@ router.post("/loginTest", async (req, res) => {
   }
 });
 
+router.post("/add-feedback", async (req, res) => {
+  const { clientId, clientName, driverId, comment, rating } = req.body;
+
+  try {
+    await Driver.findByIdAndUpdate(driverId, {
+      $push: {
+        feedback: {
+          user_id: clientId,
+          user_name: clientName,
+          comment: comment,
+          rating: rating,
+        },
+      },
+    });
+    res.status(200).send("comment added successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred");
+  }
+});
 module.exports = router;

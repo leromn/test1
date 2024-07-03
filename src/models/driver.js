@@ -100,7 +100,7 @@ const DriverSchema = new mongoose.Schema({
       },
     },
   ],
-  comments: [
+  feedback: [
     {
       user_id: {
         type: String,
