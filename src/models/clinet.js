@@ -15,7 +15,21 @@ const ClinetSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
-    required: true,
+  },
+  company: {
+    name: {
+      type: String,
+    },
+    description: {
+      type: String,
+    },
+    location: {
+      type: String,
+    },
+  },
+  paid_balance: {
+    type: Number,
+    default: 0,
   },
   my_jobs_list: [
     {
@@ -26,6 +40,14 @@ const ClinetSchema = new mongoose.Schema({
       job_title: {
         type: String,
         required: true,
+      },
+      job_status: {
+        ///acceptable values : in_progress,completed
+        type: String,
+      },
+      payment_completed: {
+        type: Boolean,
+        default: false,
       },
     },
   ],
