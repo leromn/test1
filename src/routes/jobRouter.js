@@ -2,30 +2,32 @@ var express = require("express"),
   router = express.Router();
 const Job = require("../models/job");
 const Driver = require("../models/driver");
-const TokenAuth = require("../middlware/tokenAuth").verifyToken;
+const verifyToken = require("../middlware/tokenAuth").verifyToken;
 
 const multer = require("multer");
 const upload = multer({ dest: "../../uploads" });
 
 const jwt = require("jsonwebtoken");
+function convertBufferToAudio(buffer, fileExtension, id) {
+  const filename = `${id}.${fileExtension}`;
+  const filePath = path.join(__dirname, "audios", filename);
 
-const verifyToken = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
+  fs.writeFileSync(filePath, buffer, { encoding: "base64" });
 
-  const token = authHeader.split(" ")[1];
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // req.userId = decoded.userId;
-    // req.userRole = decoded.role;
-    next();
-  } catch (error) {
-    console.error(error);
-    return res.status(401).json({ message: "Invalid token" });
+  console.log(`Audio file "${filePath}" created successfully.`);
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const jobCache = []; // Array to hold the cached job elements
+
+function addJobToCache(newJob) {
+  jobCache.unshift(newJob); // Add the new array at the beginning
+
+  if (jobCache.length > 10) {
+    jobCache.pop(); // Remove the last (oldest) array if the length exceeds 10
   }
-};
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
 router.get("/jobsTokenTest", verifyToken, async (req, res) => {
   try {
     res.json({ message: "token authenticated" });
@@ -79,7 +81,8 @@ router.post("/", upload.single("audio"), async (req, res) => {
     });
 
     await job.save();
-
+    const modifiedJob = { ...job, audio_description: undefined };
+    addJobToCache(modifiedJob);
     // Send notification to available drivers (implementation needed)
     console.log(`job created: ${job._id}`);
     // store the job id on the owner client database jobs
@@ -109,15 +112,91 @@ router.get("/:id/get-job-detail", async (req, res) => {
     res.status(500).send("An error occurred");
   }
 });
+
+router.get("/:id/get-audio", async (req, res) => {
+  try {
+    const jobId = req.params.id;
+    let bufferData, contentType, fileExtension;
+    const folderPath = path.join(__dirname, "audios");
+    fs.readdir(folderPath, async (err, files) => {
+      if (err) {
+        console.error("Error reading directory:", err);
+        return;
+      }
+
+      const matchingFiles = files.filter((file) => {
+        const fileExtension = path.extname(file).slice(1); // Get the file extension without the dot
+        const fileNameWithoutExtension = path.basename(
+          file,
+          `.${fileExtension}`,
+        );
+        return fileNameWithoutExtension === filename;
+      });
+
+      ///////////////////////////////////////////////////////////////////////////////////////////////////////
+      //if file not found on device
+
+      if (matchingFiles.length === 0) {
+        const job = await Job.findById(userId).select("audio_description _id");
+        if (!job) {
+          res.status(500).send("no job with this id");
+          return;
+        } else if (!job.audio_description.data) {
+          res.status(400).send("no audio description");
+          return;
+        }
+        // Check if the image face is front or back
+        bufferData = user.audio_description.data;
+        contentType = user.audio_description.content_type;
+
+        fileExtension = contentType.split("/")[1];
+        convertBufferToImage(bufferData, fileExtension, jobId);
+      } else {
+        const firstMatchingFile = matchingFiles[0];
+        fileExtension = path.extname(firstMatchingFile).slice(1);
+        contentType = mime.contentType(fileExtension);
+        // const filePath = path.join(folderPath, firstMatchingFile);
+        // bufferData = await fs.readFile(filePath);
+      }
+    });
+
+    // Set the headers for the download prompt
+
+    res.setHeader(
+      "Content-disposition",
+      "attachment; filename=${imagename}.${fileExtension}",
+    );
+
+    // Set the appropriate headers for the image response
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Content-Disposition", "inline");
+
+    // Stream the file to the response
+    const audioPath = path.join(
+      __dirname,
+      "audios",
+      `${jobId}.${fileExtension}`,
+    ); //change name of each downloaded image to the appropriate user and type of image
+    res.sendFile(audioPath);
+
+    // res.status(200).send(" Image download successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred");
+  }
+});
+
 // Get all Shipments (client or driver perspective - needs authorization)
-router.get("/all", TokenAuth, async (req, res) => {
+router.get("/all/:pageNumber", async (req, res) => {
   console.log("/get jobs endpoint accessed");
   // sort values are
   // 1 Sort ascending.    -1 Sort descending.
   var sortBy = req.query.sortBy;
+  const pageNumber = parseInt(req.params.pageNumber);
+
   try {
     let filter = {};
-    if (sortBy === "time") {
+    if (sortBy === "time" || !sortBy) {
       filter = { created_at: req.query.timeSort };
     } else if (sortBy === "price") {
       filter = { estimated_cost: req.query.priceSort };
@@ -127,13 +206,34 @@ router.get("/all", TokenAuth, async (req, res) => {
         estimated_cost: req.query.priceSort,
       };
     }
-    // include in selection
-    const selection = {
-      projection: { shipment_drivers_list: 0, audio_description: 0 },
-    };
-    // const result = await collection.find({}, { projection: { field1: 1, field2: 1 } })
-    const jobs = await Job.find({}, selection).sort(filter);
-    res.json({ jobs: jobs });
+
+    if (
+      pageNumber === 1 &&
+      jobCache.length > 0 &&
+      (sortBy === "time" || !sortBy)
+    ) {
+      // Return the cached job elements for the first page
+      res.json({ jobs: jobCache });
+    } else {
+      // Include in selection
+      const selection = {
+        projection: { shipment_drivers_list: 0, audio_description: 0 },
+      };
+
+      // Fetch the job list from the database
+      const jobs = await Job.find({}, selection)
+        .sort(filter)
+        .skip((pageNumber - 1) * 10)
+        .limit(10);
+
+      if (pageNumber === 1 && (sortBy === "time" || !sortBy)) {
+        // Update the cache with the job elements for the first page
+        jobCache.length = 0; // Clear existing cache
+        jobCache.push(...jobs); // Add new job elements to the cache
+      }
+
+      res.json({ jobs: jobs });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

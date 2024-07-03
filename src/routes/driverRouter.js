@@ -15,6 +15,14 @@ const hashPassword = async (password) => {
   const salt = await bcrypt.genSalt(10);
   return await bcrypt.hash(password, salt);
 };
+function convertBufferToImage(buffer, fileExtension, id) {
+  const filename = `${id}.${fileExtension}`;
+  const filePath = path.join(__dirname, "images", filename);
+
+  fs.writeFileSync(filePath, buffer, { encoding: "base64" });
+
+  console.log(`Image file "${filePath}" created successfully.`);
+}
 
 router.post("/register", async (req, res) => {
   try {
@@ -145,15 +153,6 @@ router.post("/:id/profile-image", upload.single("image"), async (req, res) => {
     res.status(500).send("An error occurred");
   }
 });
-
-function convertBufferToImage(buffer, fileExtension, id) {
-  const filename = `${id}.${fileExtension}`;
-  const filePath = path.join(__dirname, "images", filename);
-
-  fs.writeFileSync(filePath, buffer, { encoding: "base64" });
-
-  console.log(`Image file "${filePath}" created successfully.`);
-}
 
 router.get("/:id/driving-licence/:image_face", async (req, res) => {
   try {
