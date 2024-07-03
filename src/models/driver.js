@@ -100,6 +100,24 @@ const DriverSchema = new mongoose.Schema({
       },
     },
   ],
+  comments: [
+    {
+      user_id: {
+        type: String,
+      },
+      user_name: {
+        type: String,
+      },
+      comment: {
+        ///acceptable values : enrolled,rejected,completed
+        type: String,
+      },
+      rating: {
+        type: Number,
+        default: 0,
+      },
+    },
+  ],
   // Add fields for driver ratings, license details, etc. (optional)
 });
 
