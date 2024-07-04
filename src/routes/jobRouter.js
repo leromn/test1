@@ -284,28 +284,28 @@ router.post("/:id/apply", async (req, res) => {
 
 // Mark shipment as completed (driver perspective)
 router.post("/:id/complete", async (req, res) => {
-  const shipmentId = req.params.id;
-  const { driverId } = req.user; // Implement user authentication
+  const jobId = req.params.id;
+  const { driverId } = req.body.driverId; // Implement user authentication
   try {
-    const shipment = await Shipment.findByIdAndUpdate(
-      shipmentId,
+    const job = await Job.findByIdAndUpdate(
+      jobId,
       {
         status: "completed",
       },
       { new: true },
     );
 
-    if (!shipment) {
-      return res.status(404).json({ message: "Shipment not found" });
+    if (!job) {
+      return res.status(404).json({ message: "job not found" });
     }
 
-    if (shipment.driver._id.toString() !== driverId) {
+    if (job.ownerId._id.toString() !== driverId) {
       return res.status(403).json({ message: "Unauthorized access" });
     }
 
-    console.log(`Shipment ${shipmentId} marked as completed`);
+    console.log(`Shipment ${jobId} marked as completed`);
 
-    res.json(shipment);
+    res.json(job);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
