@@ -197,13 +197,13 @@ router.get("/all/:pageNumber", async (req, res) => {
   try {
     let filter = {};
     if (sortBy === "time" || !sortBy) {
-      filter = { created_at: 1 };
+      filter = { created_at: -1 };
     } else if (sortBy === "price") {
-      filter = { estimated_cost: 1 };
+      filter = { estimated_cost: -1 };
     } else if (sortBy === "both") {
       filter = {
-        created_at: 1,
-        estimated_cost: 1,
+        created_at: -1,
+        estimated_cost: -1,
       };
     }
 
