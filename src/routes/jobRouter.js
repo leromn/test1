@@ -221,7 +221,7 @@ router.get("/all/:pageNumber", async (req, res) => {
       };
 
       // Fetch the job list from the database
-      const jobs = await Job.find({}, selection)
+      const jobs = await Job.find({ status: "Open" }, selection)
         .sort(filter)
         .skip((pageNumber - 1) * 10)
         .limit(10);
