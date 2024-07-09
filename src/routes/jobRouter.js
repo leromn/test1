@@ -283,6 +283,33 @@ router.post("/:id/apply", async (req, res) => {
 });
 
 // Mark shipment as completed (driver perspective)
+router.post("/:id/close", async (req, res) => {
+  const jobId = req.params.id;
+  const { driverId } = req.body.driverId; // Implement user authentication
+  try {
+    const job = await Job.findByIdAndUpdate(
+      jobId,
+      {
+        status: "closed",
+      },
+      { new: true },
+    );
+
+    if (!job) {
+      return res.status(404).json({ message: "job not found" });
+    }
+
+    if (job.ownerId._id.toString() !== driverId) {
+      return res.status(403).json({ message: "Unauthorized access" });
+    }
+
+    console.log(`Shipment ${jobId} marked as closed`);
+
+    res.json(job);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 router.post("/:id/complete", async (req, res) => {
   const jobId = req.params.id;
   const { driverId } = req.body.driverId; // Implement user authentication
@@ -310,7 +337,6 @@ router.post("/:id/complete", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
 router.get("/test", async (req, res) => {
   try {
     const job = new Job({

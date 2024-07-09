@@ -53,6 +53,7 @@ const JobSchema = new mongoose.Schema({
     type: String,
   },
   status: {
+    // open,closed,completed
     type: String,
     default: "Open",
   },
