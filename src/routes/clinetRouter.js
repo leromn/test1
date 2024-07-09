@@ -11,7 +11,8 @@ const hashPassword = async (password) => {
 //
 router.post("/register", async (req, res) => {
   try {
-    const { full_name, phone_number, gender, password } = req.body;
+    const { full_name, phone_number, gender, password, referral_string } =
+      req.body;
 
     if (!full_name || !password || !phone_number || !password) {
       return res.status(400).json({ message: "Missing required fields" });
@@ -28,6 +29,17 @@ router.post("/register", async (req, res) => {
     });
 
     await newUser.save();
+    if (referral_string != "empty") {
+      const [ref_role, ref_id] = referral_string.split("-");
+      await Client.findByIdAndUpdate(ref_id, {
+        $push: {
+          shipment_drivers_list: {
+            user_id: ref_id,
+            user_role: ref_role,
+          },
+        },
+      });
+    }
     res.json({ message: "Client Account created successfully" });
   } catch (error) {
     console.error(error);

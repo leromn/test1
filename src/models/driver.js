@@ -100,6 +100,16 @@ const DriverSchema = new mongoose.Schema({
       },
     },
   ],
+  referrals: [
+    {
+      user_role: {
+        type: String,
+      },
+      user_id: {
+        type: String,
+      },
+    },
+  ],
   feedback: [
     {
       user_id: {

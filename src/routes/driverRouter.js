@@ -26,7 +26,9 @@ function convertBufferToImage(buffer, fileExtension, id) {
 
 router.post("/register", async (req, res) => {
   try {
-    const { full_name, phone_number, age, gender, password } = req.body;
+    // referral string takes the values "empty" or another string id
+    const { full_name, phone_number, age, gender, password, referral_string } =
+      req.body;
 
     if (!full_name || !password || !phone_number || !gender || !age) {
       return res.status(400).json({ message: "Missing required fields" });
@@ -43,6 +45,17 @@ router.post("/register", async (req, res) => {
     });
 
     await newUser.save();
+    if (referral_string != "empty") {
+      const [ref_role, ref_id] = referral_string.split("-");
+      await Driver.findByIdAndUpdate(ref_id, {
+        $push: {
+          shipment_drivers_list: {
+            user_id: ref_id,
+            user_role: ref_role,
+          },
+        },
+      });
+    }
     res.json({ message: "Driver Account created successfully" });
   } catch (error) {
     console.error(error);
