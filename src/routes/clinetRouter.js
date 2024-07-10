@@ -29,7 +29,11 @@ router.post("/register", async (req, res) => {
     });
 
     await newUser.save();
-    if (referral_string != "empty") {
+    if (
+      referral_string != "empty" &&
+      referral_string != "" &&
+      referral_string != null
+    ) {
       const [ref_role, ref_id] = referral_string.split("-");
       await Client.findByIdAndUpdate(ref_id, {
         $push: {
