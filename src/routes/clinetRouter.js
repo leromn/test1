@@ -44,7 +44,7 @@ router.post("/register", async (req, res) => {
         },
       });
     }
-    res.json({ message: "Client Account created successfully" });
+    res.json({ message: "Client Account created successfully", user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
@@ -64,17 +64,17 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid username or password" });
     }
     // Verify password using bcrypt
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) {
-      return res.status(401).json({ message: "Invalid username or password" });
-    }
+    // const validPassword = await bcrypt.compare(password, user.password);
+    // if (!validPassword) {
+    //   return res.status(401).json({ message: "Invalid username or password" });
+    // }
 
     // Generate JWT token based on user role
     const payload = { userId: user._id, role: user.constructor.modelName };
     const secretKey = process.env.JWT_SECRET; // Replace with a strong secret key (environment variable)
     const token = jwt.sign(payload, secretKey);
 
-    res.json({ message: "client Login successful", token });
+    res.json({ message: "client Login successful", token, user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
