@@ -1,6 +1,8 @@
 var express = require("express"),
   router = express.Router();
 const Driver = require("../models/driver");
+const VerificationQueue = require("../models/verificationQueue");
+
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const CurrentAppVersion = process.env.VERSION;
@@ -253,6 +255,29 @@ router.post("/driving-licence", upload.single("image"), async (req, res) => {
   }
 });
 
+router.post("/request_verification", async (req, res) => {
+  try {
+    // Extract user ID and username from the request body
+    const { userId, fullname } = req.body;
+
+    // Create a new document in the verification queue collection
+    const verificationRequest = await VerificationQueue.create({
+      userId,
+      fullname,
+    });
+
+    // Return success response
+    res
+      .status(201)
+      .json({ message: "Verification request added to the queue." });
+  } catch (error) {
+    // Return error response
+    res.status(500).json({
+      error: "An error occurred while processing the verification request.",
+    });
+  }
+});
+
 router.post("/add_payment_method", async (req, res) => {
   const { driverId, p_type, p_number } = req.body;
 
@@ -275,4 +300,5 @@ router.post("/add_payment_method", async (req, res) => {
     res.status(500).send("An error occurred");
   }
 });
+
 module.exports = router;

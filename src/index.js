@@ -8,6 +8,7 @@ var TestRoutes = require("./routes/testRouter");
 var JobRouter = require("./routes/jobRouter");
 var ClientRouter = require("./routes/clinetRouter");
 var DriverRouter = require("./routes/driverRouter");
+var AdminRouter = require("./routes/adminRouter");
 
 const MONGODB_URI =
   "mongodb+srv://esraelasefa822:akZfVCD0snZnlBlZ@dil.uqd3gbq.mongodb.net/";
@@ -47,5 +48,6 @@ app.use("/", TestRoutes);
 app.use("/job", JobRouter);
 app.use("/client", ClientRouter);
 app.use("/driver", DriverRouter);
+app.use("/admin", AdminRouter);
 
 app.listen(port, () => console.log(`Server listening on port ${port}`));
