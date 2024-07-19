@@ -39,12 +39,24 @@ router.get("/jobsTokenTest", verifyToken, async (req, res) => {
 //upload jobs to the database
 router.post("/", upload.single("audio"), async (req, res) => {
   console.log("post /jobs endpoint accessed");
-  const { originalname, path } = req.file;
-  const audioData = fs.readFileSync(path);
-  const contentType = req.file.mimetype;
+  const audio_description = {};
+  if (req.file) {
+    const { originalname, path } = req.file;
+    const audioData = fs.readFileSync(path);
+    const contentType = req.file.mimetype;
+    // File is present in the request
+    audio_description = {
+      data: audioData,
+      content_type: contentType,
+    };
+  } else {
+    // File is not present in the request
+    audio_description = {};
+  }
 
   const {
     ownerId,
+    title,
     text_description,
     origin,
     destination,
@@ -54,6 +66,8 @@ router.post("/", upload.single("audio"), async (req, res) => {
     advance_payment,
     rangeLE,
     route,
+    mode,
+    container,
     number_of_drivers_needed,
   } = req.body;
   console.log("body variables", req.body);
@@ -61,18 +75,17 @@ router.post("/", upload.single("audio"), async (req, res) => {
   try {
     const job = new Job({
       ownerId: ownerId,
-      text_description: text_description,
-      audio_description: {
-        data: audioData,
-        content_type: contentType,
-      },
       title: title,
+      text_description: text_description,
+      audio_description: audio_description,
       origin: origin,
       destination: destination,
       container_location: container_location,
       container_weight: container_weight,
       estimated_cost: estimated_cost,
       advance_payment: advance_payment,
+      mode: mode,
+      container: container,
       rangeLE: rangeLE,
       route: route,
       status: "Open",

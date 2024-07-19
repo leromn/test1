@@ -44,22 +44,33 @@ const JobSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  mode: {
+    //uni vs multi modal
+    type: String,
+    // required: true,
+  },
+  container: {
+    //with vs without container
+    type: String,
+    // required: true,
+  },
   rangeLE: {
     //local vs export
     type: String,
     // required: true,
   },
   route: {
+    // route 1 vs route 2
     type: String,
+  },
+  number_of_drivers_needed: {
+    type: Number,
+    required: true,
   },
   status: {
     // open,closed,completed
     type: String,
     default: "Open",
-  },
-  number_of_drivers_needed: {
-    type: Number,
-    required: true,
   },
   shipment_drivers_list: [
     {
