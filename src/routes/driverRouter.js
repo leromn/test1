@@ -17,8 +17,8 @@ const hashPassword = async (password) => {
   const salt = await bcrypt.genSalt(10);
   return await bcrypt.hash(password, salt);
 };
-function convertBufferToImage(buffer, fileExtension, id) {
-  const filename = `${id}.${fileExtension}`;
+function convertBufferToImage(buffer, fileExtension, id, type) {
+  const filename = `${type}.${id}.${fileExtension}`;
   const filePath = path.join(__dirname, "images", filename);
 
   fs.writeFileSync(filePath, buffer, { encoding: "base64" });
@@ -118,12 +118,13 @@ router.get("/:id/get-driver-profile", async (req, res) => {
     contentType = user.profile_image.content_type;
 
     const fileExtension = contentType.split("/")[1];
-    convertBufferToImage(bufferData, fileExtension, userId);
+    const imageNameType = "P_";
+    convertBufferToImage(bufferData, fileExtension, userId, imageNameType);
     // Set the headers for the download prompt
 
     res.setHeader(
       "Content-disposition",
-      "attachment; filename=${imagename}.${fileExtension}",
+      "attachment; filename=${imageNameType}.${id}.${fileExtension}",
     );
 
     // Set the appropriate headers for the image response
@@ -134,7 +135,7 @@ router.get("/:id/get-driver-profile", async (req, res) => {
     const imagePath = path.join(
       __dirname,
       "images",
-      `${userId}.${fileExtension}`,
+      `${imageNameType}.${id}.${fileExtension}`,
     ); //change name of each downloaded image to the appropriate user and type of image
     res.sendFile(imagePath);
 
@@ -174,6 +175,7 @@ router.get("/:id/driving-licence/:image_face", async (req, res) => {
     // const userId = "66531249728ee6aec8d95e24";
     const userId = req.params.id;
     const imageFace = req.params.image_face;
+    const imageNameType = "";
 
     const user = await Driver.findById(userId);
     if (!user) {
@@ -185,21 +187,23 @@ router.get("/:id/driving-licence/:image_face", async (req, res) => {
     if (imageFace == "front") {
       bufferData = user.front_driving_license_image.data;
       contentType = user.front_driving_license_image.content_type;
+      imageNameType = "FL_";
     } else if (imageFace == "back") {
       bufferData = user.back_driving_license_image.data;
       contentType = user.back_driving_license_image.content_type;
+      imageNameType = "BL_";
     } else {
       // Invalid image face value
       res.status(400).send("Invalid image face value");
     }
 
     const fileExtension = contentType.split("/")[1];
-    convertBufferToImage(bufferData, fileExtension, userId);
+    convertBufferToImage(bufferData, fileExtension, userId, imageNameType);
     // Set the headers for the download prompt
 
     res.setHeader(
       "Content-disposition",
-      "attachment; filename=${imagename}.${fileExtension}",
+      "attachment; filename=${imageNameType}.${id}.${fileExtension}",
     );
 
     res.setHeader("Content-type", contentType);
@@ -209,7 +213,7 @@ router.get("/:id/driving-licence/:image_face", async (req, res) => {
     const imagePath = path.join(
       __dirname,
       "images",
-      `${userId}.${fileExtension}`,
+      `${imageNameType}.${id}.${fileExtension}`,
     ); //change name of each downloaded image to the appropriate user and type of image
     res.sendFile(imagePath);
 

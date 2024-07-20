@@ -8,8 +8,8 @@ const multer = require("multer");
 const upload = multer({ dest: "../../uploads" });
 
 const jwt = require("jsonwebtoken");
-function convertBufferToAudio(buffer, fileExtension, id) {
-  const filename = `${id}.${fileExtension}`;
+function convertBufferToAudio(buffer, fileExtension, id, imageNameType = "A_") {
+  const filename = `${imageNameType}.${id}.${fileExtension}`;
   const filePath = path.join(__dirname, "audios", filename);
 
   fs.writeFileSync(filePath, buffer, { encoding: "base64" });
@@ -130,6 +130,7 @@ router.get("/:id/get-audio", async (req, res) => {
   try {
     const jobId = req.params.id;
     let bufferData, contentType, fileExtension;
+    const filename = "A_".jobId;
     const folderPath = path.join(__dirname, "audios");
     fs.readdir(folderPath, async (err, files) => {
       if (err) {
@@ -163,7 +164,7 @@ router.get("/:id/get-audio", async (req, res) => {
         contentType = user.audio_description.content_type;
 
         fileExtension = contentType.split("/")[1];
-        convertBufferToImage(bufferData, fileExtension, jobId);
+        convertBufferToImage(bufferData, fileExtension, jobId, "A_");
       } else {
         const firstMatchingFile = matchingFiles[0];
         fileExtension = path.extname(firstMatchingFile).slice(1);
@@ -177,7 +178,7 @@ router.get("/:id/get-audio", async (req, res) => {
 
     res.setHeader(
       "Content-disposition",
-      "attachment; filename=${imagename}.${fileExtension}",
+      "attachment; filename=${imageNameType}.${id}.${fileExtension}",
     );
 
     // Set the appropriate headers for the image response
@@ -188,7 +189,7 @@ router.get("/:id/get-audio", async (req, res) => {
     const audioPath = path.join(
       __dirname,
       "audios",
-      `${jobId}.${fileExtension}`,
+      `${imageNameType}.${jobId}.${fileExtension}`,
     ); //change name of each downloaded image to the appropriate user and type of image
     res.sendFile(audioPath);
 
