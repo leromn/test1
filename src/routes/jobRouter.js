@@ -114,7 +114,7 @@ router.post("/", upload.single("audio"), async (req, res) => {
         console.error("Error updating user:", error);
       });
 
-    res.json(job, { messs: "worked" });
+    res.status(200).json({ messs: "job upload worked" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
