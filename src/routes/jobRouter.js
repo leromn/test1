@@ -2,7 +2,11 @@ var express = require("express"),
   router = express.Router();
 const Job = require("../models/job");
 const Driver = require("../models/driver");
+const Client = require("../models/clinet");
+
 const verifyToken = require("../middlware/tokenAuth").verifyToken;
+const fs = require("fs");
+const path = require("path");
 
 const multer = require("multer");
 const upload = multer({ dest: "../../uploads" });
