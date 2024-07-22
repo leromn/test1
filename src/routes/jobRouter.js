@@ -75,7 +75,7 @@ router.post("/", upload.single("audio"), async (req, res) => {
       container,
       number_of_drivers_needed,
     } = req.body;
-    console.log("body variables", req.body);
+    // console.log("body variables", req.body);
 
     const job = new Job({
       ownerId: ownerId,
@@ -105,7 +105,14 @@ router.post("/", upload.single("audio"), async (req, res) => {
     // store the job id on the owner client database jobs
     const user = await Client.findOne({ _id: ownerId });
     user.my_jobs_list.push({ job_id: job._id, job_title: job.title });
-    user.save();
+    user
+      .save()
+      .then(() => {
+        console.log("User updated successfully:", user);
+      })
+      .catch((error) => {
+        console.error("Error updating user:", error);
+      });
 
     res.json(job, { messs: "worked" });
   } catch (err) {
