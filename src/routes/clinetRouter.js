@@ -44,7 +44,7 @@ router.post("/register", async (req, res) => {
         },
       });
     }
-    res.json({ message: "Client Account created successfully", user });
+    res.json({ message: "Client Account created successfully", newUser });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
