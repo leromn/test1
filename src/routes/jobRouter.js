@@ -40,39 +40,39 @@ router.get("/jobsTokenTest", verifyToken, async (req, res) => {
 router.post("/", upload.single("audio"), async (req, res) => {
   console.log("post /jobs endpoint accessed");
   const audio_description = {};
-  if (req.file) {
-    const { originalname, path } = req.file;
-    const audioData = fs.readFileSync(path);
-    const contentType = req.file.mimetype;
-    // File is present in the request
-    audio_description = {
-      data: audioData,
-      content_type: contentType,
-    };
-  } else {
-    // File is not present in the request
-    audio_description = {};
-  }
-
-  const {
-    ownerId,
-    title,
-    text_description,
-    origin,
-    destination,
-    container_location,
-    container_weight,
-    estimated_cost,
-    advance_payment,
-    rangeLE,
-    route,
-    mode,
-    container,
-    number_of_drivers_needed,
-  } = req.body;
-  console.log("body variables", req.body);
-
   try {
+    if (req.file) {
+      const { originalname, path } = req.file;
+      const audioData = fs.readFileSync(path);
+      const contentType = req.file.mimetype;
+      // File is present in the request
+      audio_description = {
+        data: audioData,
+        content_type: contentType,
+      };
+    } else {
+      // File is not present in the request
+      audio_description = {};
+    }
+
+    const {
+      ownerId,
+      title,
+      text_description,
+      origin,
+      destination,
+      container_location,
+      container_weight,
+      estimated_cost,
+      advance_payment,
+      rangeLE,
+      route,
+      mode,
+      container,
+      number_of_drivers_needed,
+    } = req.body;
+    console.log("body variables", req.body);
+
     const job = new Job({
       ownerId: ownerId,
       title: title,
@@ -103,7 +103,7 @@ router.post("/", upload.single("audio"), async (req, res) => {
     user.my_jobs_list.push({ job_id: job._id, job_title: job.title });
     user.save();
 
-    res.json(job);
+    res.json(job, { messs: "worked" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
