@@ -43,7 +43,7 @@ router.get("/jobsTokenTest", verifyToken, async (req, res) => {
 //upload jobs to the database
 router.post("/", upload.single("audio"), async (req, res) => {
   console.log("post /jobs endpoint accessed");
-  const audio_description = {};
+  let audio_description = {};
   try {
     if (req.file) {
       const { originalname, path } = req.file;
