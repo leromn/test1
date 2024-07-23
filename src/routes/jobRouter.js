@@ -108,13 +108,13 @@ router.post("/", upload.single("audio"), async (req, res) => {
     user
       .save()
       .then(() => {
-        console.log("User updated successfully:", user);
+        console.log("Client job list updated successfully:");
       })
       .catch((error) => {
-        console.error("Error updating user:", error);
+        console.error("Error updating client job list:", error);
       });
 
-    res.status(200).json({ messs: "job upload worked" });
+    res.status(200).json({ messsage: "job upload worked" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

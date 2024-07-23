@@ -26,6 +26,11 @@ const DriverSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  verification_status: {
+    // nameError,pictureError,both
+    type: string,
+    default: false,
+  },
   vehicle_added: {
     type: Boolean,
     default: false,
