@@ -231,7 +231,7 @@ router.get("/all/:pageNumber", async (req, res) => {
         estimated_cost: -1,
       };
     }
-
+    // https://dil-devserver.onrender.com/
     if (
       pageNumber === 1 &&
       jobCache.length > 0 &&
@@ -240,13 +240,9 @@ router.get("/all/:pageNumber", async (req, res) => {
       // Return the cached job elements for the first page
       res.json({ jobs: jobCache });
     } else {
-      // Include in selection
-      const selection = {
-        projection: { shipment_drivers_list: 0, audio_description: 0 },
-      };
-
       // Fetch the job list from the database
-      const jobs = await Job.find({ status: "Open" }, selection)
+      const jobs = await Job.find({ status: "Open" })
+        .select({ audio_description: 0 })
         .sort(filter)
         .skip((pageNumber - 1) * 10)
         .limit(10);
