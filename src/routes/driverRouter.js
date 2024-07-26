@@ -100,6 +100,28 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+router.post("/refresh-retrieve", async (req, res) => {
+  try {
+    const { driver_id } = req.body;
+
+    const user = await Driver.findById(driver_id).select(
+      "-back_driving_license_image -front_driving_license_image -profile_image",
+    );
+    if (!user) {
+      return res.status(401).json({ message: "Invalid username or password" });
+    }
+
+    // Generate JWT token based on user role
+    const payload = { userId: user._id, role: user.constructor.modelName };
+    const secretKey = process.env.JWT_SECRET; // Replace with a strong secret key (environment variable)
+    const token = jwt.sign(payload, secretKey);
+
+    res.json({ message: "Driver session refreshed successfully", token, user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 router.get("/:id/get-driver-profile", async (req, res) => {
   try {
