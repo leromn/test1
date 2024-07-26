@@ -85,11 +85,9 @@ router.post("/refresh-retrieve", async (req, res) => {
   try {
     const { client_id } = req.body;
 
-    const user = await Client.findById(client_id).select(
-      "-back_driving_license_image -front_driving_license_image -profile_image",
-    );
+    const user = await Client.findById(client_id);
     if (!user) {
-      return res.status(401).json({ message: "Invalid username or password" });
+      return res.status(401).json({ message: "Invalid clientId" });
     }
 
     // Generate JWT token based on user role
