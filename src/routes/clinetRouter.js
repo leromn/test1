@@ -3,21 +3,40 @@ var express = require("express"),
 const Client = require("../models/clinet");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { ObjectId } = require("mongodb");
 
 const hashPassword = async (password) => {
-  const salt = await bcrypt.genSalt(10);
-  return await bcrypt.hash(password, salt);
+  try {
+    const salt = await bcrypt.genSalt(10);
+    return await bcrypt.hash(password, salt);
+  } catch (e) {
+    console.log(e);
+  }
 };
+
 //
 router.post("/register", async (req, res) => {
   try {
     const { full_name, phone_number, gender, password, referral_string } =
       req.body;
 
-    if (!full_name || !password || !phone_number || !password) {
-      return res.status(400).json({ message: "Missing required fields" });
+    // if (!full_name || !password || !phone_number || !gender) {
+    //   return res.status(400).json({ message: "Missing required fields" });
+    // }
+    if (full_name && password && phone_number && gender) {
+      console.log("working");
+    } else {
+      return res.status(400).json({
+        message:
+          "Missing required fieldsssssss" +
+          full_name +
+          phone_number +
+          gender +
+          password +
+          referral_string +
+          "cpp",
+      });
     }
-
     const hashedPassword = await hashPassword(password);
 
     newUser = new Client({
@@ -35,14 +54,25 @@ router.post("/register", async (req, res) => {
       referral_string != null
     ) {
       const [ref_role, ref_id] = referral_string.split("-");
-      await Client.findByIdAndUpdate(ref_id, {
-        $push: {
-          shipment_drivers_list: {
-            user_id: ref_id,
-            user_role: ref_role,
+      if (ref_role == "D") {
+        await Driver.findByIdAndUpdate(ref_id, {
+          $push: {
+            referral: {
+              user_id: ref_id,
+              user_role: ref_role,
+            },
           },
-        },
-      });
+        });
+      } else if (ref_role == "C") {
+        await Client.findByIdAndUpdate(ref_id, {
+          $push: {
+            referral: {
+              user_id: ref_id,
+              user_role: ref_role,
+            },
+          },
+        });
+      }
     }
     res.json({ message: "Client Account created successfully", newUser });
   } catch (error) {
@@ -84,8 +114,9 @@ router.post("/login", async (req, res) => {
 router.post("/refresh-retrieve", async (req, res) => {
   try {
     const { client_id } = req.body;
+    const objectId = new ObjectId(client);
 
-    const user = await Client.findById(client_id);
+    const user = await Client.findById(objectId);
     if (!user) {
       return res.status(401).json({ message: "Invalid clientId" });
     }

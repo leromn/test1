@@ -16,6 +16,21 @@ const ClinetSchema = new mongoose.Schema({
   gender: {
     type: String,
   },
+  referrals: [
+    {
+      user_id: {
+        type: mongoose.Schema.Types.ObjectId,
+      },
+      user_role: {
+        type: String,
+        required: true,
+      },
+      verification_status: {
+        type: String,
+      },
+    },
+  ],
+
   company: {
     name: {
       type: String,
