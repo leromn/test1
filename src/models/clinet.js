@@ -23,7 +23,7 @@ const ClinetSchema = new mongoose.Schema({
       },
       user_role: {
         type: String,
-        required: true,
+        // required: true,
       },
       verification_status: {
         type: String,
@@ -54,7 +54,7 @@ const ClinetSchema = new mongoose.Schema({
       },
       job_title: {
         type: String,
-        required: true,
+        // required: true,
       },
       job_status: {
         ///acceptable values : in_progress,completed

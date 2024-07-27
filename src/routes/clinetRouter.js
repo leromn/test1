@@ -20,23 +20,12 @@ router.post("/register", async (req, res) => {
     const { full_name, phone_number, gender, password, referral_string } =
       req.body;
 
-    // if (!full_name || !password || !phone_number || !gender) {
-    //   return res.status(400).json({ message: "Missing required fields" });
-    // }
-    if (full_name && password && phone_number && gender) {
-      console.log("working");
+    if (!full_name || !password || !phone_number || !gender) {
+      return res.status(400).json({ message: "Missing required fields" });
     } else {
-      return res.status(400).json({
-        message:
-          "Missing required fieldsssssss" +
-          full_name +
-          phone_number +
-          gender +
-          password +
-          referral_string +
-          "cpp",
-      });
+      console.log("Working");
     }
+
     const hashedPassword = await hashPassword(password);
 
     newUser = new Client({
@@ -114,19 +103,22 @@ router.post("/login", async (req, res) => {
 router.post("/refresh-retrieve", async (req, res) => {
   try {
     const { client_id } = req.body;
-    const objectId = new ObjectId(client);
 
-    const user = await Client.findById(objectId);
-    if (!user) {
+    const client = await Client.findOne({ _id: client_id });
+    if (!client) {
       return res.status(401).json({ message: "Invalid clientId" });
     }
 
     // Generate JWT token based on user role
-    const payload = { userId: user._id, role: user.constructor.modelName };
+    const payload = { userId: client._id, role: client.constructor.modelName };
     const secretKey = process.env.JWT_SECRET; // Replace with a strong secret key (environment variable)
     const token = jwt.sign(payload, secretKey);
 
-    res.json({ message: "Client session refreshed successfully", token, user });
+    res.json({
+      message: "Client session refreshed successfully",
+      token,
+      client,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });
