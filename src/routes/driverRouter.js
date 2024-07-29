@@ -104,9 +104,11 @@ router.post("/refresh-retrieve", async (req, res) => {
   try {
     const { driver_id } = req.body;
 
-    const user = await Driver.findById(driver_id).select(
-      "-back_driving_license_image -front_driving_license_image -profile_image",
+    const user = await Driver.findOne(
+      { _id: driver_id },
+      { front_driving_license_image: 0, back_driving_license_image: 0 },
     );
+
     if (!user) {
       return res.status(401).json({ message: "Invalid Id" });
     }
