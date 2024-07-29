@@ -185,6 +185,7 @@ router.post("/:id/profile-image", upload.single("image"), async (req, res) => {
     // Update the user document with the image data
     await Driver.findByIdAndUpdate(userId, {
       profile_image: imageData,
+      driverImage: true,
     });
 
     res.status(200).send("Profile Image uploaded successfully");
@@ -267,10 +268,12 @@ router.post("/driving-licence", upload.single("image"), async (req, res) => {
     if (imageFace == "front") {
       await Driver.findByIdAndUpdate(userId, {
         front_driving_license_image: imageData,
+        front: true,
       });
     } else if (imageFace == "back") {
       await Driver.findByIdAndUpdate(userId, {
         back_driving_license_image: imageData,
+        back: true,
       });
     } else {
       res.status(500).send("provide the image face");

@@ -47,6 +47,18 @@ const DriverSchema = new mongoose.Schema({
   back_license_number: {
     type: String,
   },
+  front: {
+    type: Boolean,
+    default: false,
+  },
+  back: {
+    type: Boolean,
+    default: false,
+  },
+  driverImage: {
+    type: Boolean,
+    default: false,
+  },
   front_driving_license_image: {
     data: {
       type: Buffer,
