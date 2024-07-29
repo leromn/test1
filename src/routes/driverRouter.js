@@ -108,7 +108,7 @@ router.post("/refresh-retrieve", async (req, res) => {
       "-back_driving_license_image -front_driving_license_image -profile_image",
     );
     if (!user) {
-      return res.status(401).json({ message: "Invalid username or password" });
+      return res.status(401).json({ message: "Invalid Id" });
     }
 
     // Generate JWT token based on user role
@@ -284,12 +284,13 @@ router.post("/driving-licence", upload.single("image"), async (req, res) => {
 router.post("/request_verification", async (req, res) => {
   try {
     // Extract user ID and username from the request body
-    const { userId, fullname } = req.body;
+    const { userId, fullname, role } = req.body;
 
     // Create a new document in the verification queue collection
-    const verificationRequest = await VerificationQueue.create({
+    await VerificationQueue.create({
       userId,
       fullname,
+      role,
     });
 
     // Return success response

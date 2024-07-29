@@ -6,16 +6,33 @@ const Driver = require("../models/driver");
 // GET /verification/requests
 router.get("/verification/requests", async (req, res) => {
   try {
+    const adminName = req.query.adminName;
+    let verificationRequests = {};
+    if (adminName == "first" || adminName == "") {
+      verificationRequests = await VerificationQueue.find()
+        .sort({
+          createdAt: "desc",
+        })
+        .limit(10);
+    } else if ((adminName = "second")) {
+      verificationRequests = await VerificationQueue.find()
+        .sort({
+          createdAt: "desc",
+        })
+        .limit(10);
+    } else if (adminName == "third") {
+      verificationRequests = await VerificationQueue.find()
+        .sort({
+          createdAt: "desc",
+        })
+        .limit(20);
+    }
     // Retrieve all verification requests sorted by creation date
-    const verificationRequests = await VerificationQueue.find()
-      .sort({
-        createdAt: "desc",
-      })
-      .limit(10);
 
     // Return the list of verification requests
     res.status(200).json(verificationRequests);
   } catch (error) {
+    console.log(error);
     // Return error response
     res.status(500).json({
       error: "An error occurred while retrieving verification requests.",
@@ -47,7 +64,7 @@ router.get("/verification/requests/:id", async (req, res) => {
   }
 });
 
-router.get("/verification/verify/:id", async (req, res) => {
+router.post("/verification/verify/:id", async (req, res) => {
   try {
     const driverId = req.params.id;
     const { nameVerification, profilePictureVerification, driverVerified } =
