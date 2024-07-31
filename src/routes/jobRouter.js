@@ -124,7 +124,8 @@ router.post("/", upload.single("audio"), async (req, res) => {
 router.get("/:id/get-job-detail", async (req, res) => {
   try {
     const jobId = req.params.id;
-    const job = await Driver.findById(jobId);
+    const projection = { audio_description: 0, shipment_drivers_list: 0 };
+    const job = await Job.findOne({ _id: jobId }, projection)
     if (!job) {
       res.status(400).send("job not found");
       return;
