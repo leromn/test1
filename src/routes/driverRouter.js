@@ -78,7 +78,7 @@ router.post("/login", async (req, res) => {
     }
 
     const user = await Driver.findOne({ phone_number: phone_number }).select(
-      "-back_driving_license_image -front_driving_license_image -profile_image",
+      "-back_driving_license_image -front_driving_license_image -back_driving_license_Image -front_driving_license_Image -profile_image",
     );
     if (!user) {
       return res.status(401).json({ message: "Invalid username or password" });
@@ -103,11 +103,8 @@ router.post("/login", async (req, res) => {
 router.post("/refresh-retrieve", async (req, res) => {
   try {
     const { driver_id } = req.body;
-
-    const user = await Driver.findOne(
-      { _id: driver_id },
-      { front_driving_license_image: 0, back_driving_license_image: 0 },
-    );
+    const projection = { front_driving_license_Image: 0, back_driving_license_image: 0, back_driving_license_Image: 0, front_driving_license_image: 0 };
+    const user = await Driver.findOne({ _id: driver_id }, projection)
 
     if (!user) {
       return res.status(401).json({ message: "Invalid Id" });

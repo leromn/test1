@@ -46,8 +46,8 @@ router.get("/verification/requests/:id", async (req, res) => {
     const driverId = req.params.id;
 
     // Fetch the corresponding job based on the user ID in the verification request
-    const driver = await Driver.findById(driverId);
-
+    const projection = { front_driving_license_Image: 0, back_driving_license_image: 0, back_driving_license_Image: 0, front_driving_license_image: 0 };
+    const driver = await Driver.findOne({ _id: driverId }, projection)
     if (!driver) {
       return res.status(404).json({
         error: "Job not found for the selected verification request.",
@@ -57,6 +57,7 @@ router.get("/verification/requests/:id", async (req, res) => {
     // Return the selected job to the admin
     res.status(200).json(driver);
   } catch (error) {
+    console.log(error)
     // Return error response
     res
       .status(500)
@@ -71,7 +72,9 @@ router.post("/verification/verify/:id", async (req, res) => {
       req.body;
 
     // Fetch the corresponding job based on the user ID in the verification request
-    const driver = await Driver.findById(driverId);
+    const projection = { front_driving_license_Image: 0, back_driving_license_image: 0, back_driving_license_Image: 0, front_driving_license_image: 0 };
+    const driver = await Driver.findOne({ _id: driverId }, projection)
+
 
     if (!driver) {
       return res.status(404).json({
