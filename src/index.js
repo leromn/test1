@@ -14,10 +14,10 @@ const MONGODB_URI =
   "mongodb+srv://esraelasefa822:akZfVCD0snZnlBlZ@dil.uqd3gbq.mongodb.net/";
 
 const app = express();
-const port = process.env.PORT || 3002;
+const port = process.env.PORT || 3004;
 const AppVersion = process.env.VERSION;
 
-// Connect to MongoDB
+// // Connect to MongoDB
 mongoose
   .connect(MONGODB_URI, {
     dbName: "DIL",
@@ -28,7 +28,7 @@ mongoose
 app.use(cors());
 app.use(bodyParser.json());
 
-// Routes
+// Routes/
 app.get("/testJson", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.status(200).json({ message: "Get test success" });
