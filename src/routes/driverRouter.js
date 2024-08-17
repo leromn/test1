@@ -307,8 +307,48 @@ router.post("/request_verification", async (req, res) => {
   }
 });
 
+router.post("/add_vehicle", async (req, res) => {
+  const { driverId, type, targa } = req.body;
+  try {
+    if (type == "front") {
+      const { brand, year, model } = req.body;
+      await Driver.findByIdAndUpdate(
+        driverId,
+        {
+          $push: {
+            front_vehicle: {
+              brand: brand,
+              model: model,
+              year: year,
+              targa: targa
+            },
+          },
+        },
+        { new: true }, // Return the updated document
+      );
+    }
+    else if (type == "back") {
+      await Driver.findByIdAndUpdate(
+        driverId,
+        {
+          $push: {
+            back_vehicle: {
+              targa: targa
+            },
+          },
+        },
+        { new: true }, // Return the updated document
+      );
+    }
+
+    res.status(200).send("vehicle added successfully");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("An error occurred");
+  }
+})
 router.post("/add_payment_method", async (req, res) => {
-  const { driverId, p_type, p_number } = req.body;
+  const { driverId, payment_type, payment_number } = req.body;
 
   try {
     const driver = await Driver.findByIdAndUpdate(
@@ -316,8 +356,8 @@ router.post("/add_payment_method", async (req, res) => {
       {
         $push: {
           payment_methods: {
-            payment_type: p_type,
-            payment_number: p_number,
+            payment_type: payment_type,
+            payment_number: payment_number,
           },
         },
       },
@@ -329,5 +369,4 @@ router.post("/add_payment_method", async (req, res) => {
     res.status(500).send("An error occurred");
   }
 });
-
 module.exports = router;

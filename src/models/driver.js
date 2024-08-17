@@ -40,13 +40,35 @@ const DriverSchema = new mongoose.Schema({
     //single vs double
     type: String,
   },
-  front_license_number: {
-    type: String,
-    // required: true,
+  front_vehicle: {
+    brand: {
+      //single vs double
+      type: String,
+    }, model: {
+      type: String,
+    }, year: {
+      type: String,
+    }, targa: {
+      //single vs double
+      type: String,
+    }
   },
-  back_license_number: {
-    type: String,
+
+  back_vehicle:
+  {
+    brand: {
+      //single vs double
+      type: String,
+    }, year: {
+      //single vs double
+      type: String,
+    },
+    targa: {
+      //single vs double
+      type: String,
+    },
   },
+  ///////////////////////////////////////////////////////////////////////////////image exist booleans
   front: {
     type: Boolean,
     default: false,
@@ -59,6 +81,7 @@ const DriverSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  ////////////////////////////////////////////////////////////////////////////////image files
   front_driving_license_image: {
     data: {
       type: Buffer,
