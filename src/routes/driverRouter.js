@@ -201,18 +201,28 @@ router.get("/:id/driving-licence/:image_face", async (req, res) => {
     const imageFace = req.params.image_face;
     let imageNameType = "";
 
-    const user = await Driver.findById(userId);
-    if (!user) {
-      res.status(500).send("no user with this id");
-      return;
-    }
+
     let bufferData = "", contentType = "";
     // Check if the image face is front or back
     if (imageFace == "front") {
+      const user = await Driver.findById(userId).select(
+        "front_driving_license_image",
+      );
+      if (!user) {
+        res.status(500).send("no user with this id");
+        return;
+      }
       bufferData = user.front_driving_license_image.data;
       contentType = user.front_driving_license_image.content_type;
       imageNameType = "FL_";
     } else if (imageFace == "back") {
+      const user = await Driver.findById(userId).select(
+        "back_driving_license_image",
+      );
+      if (!user) {
+        res.status(500).send("no user with this id");
+        return;
+      }
       bufferData = user.back_driving_license_image.data;
       contentType = user.back_driving_license_image.content_type;
       imageNameType = "BL_";
