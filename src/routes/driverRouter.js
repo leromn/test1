@@ -103,7 +103,9 @@ router.post("/login", async (req, res) => {
 router.post("/refresh-retrieve", async (req, res) => {
   try {
     const { driver_id } = req.body;
-    const projection = { front_driving_license_Image: 0, back_driving_license_image: 0, back_driving_license_Image: 0, front_driving_license_image: 0 };
+    const projection = {
+      front_driving_license_Image: 0, back_driving_license_image: 0, back_driving_license_Image: 0, front_driving_license_image: 0, profile_image: 0
+    };
     const user = await Driver.findOne({ _id: driver_id }, projection)
 
     if (!user) {
