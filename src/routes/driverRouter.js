@@ -145,7 +145,7 @@ router.get("/:id/get-driver-profile", async (req, res) => {
 
     res.setHeader(
       "Content-disposition",
-      "attachment; filename=${imageNameType}.${id}.${fileExtension}",
+      "attachment; filename=${imageNameType}.${userId}.${fileExtension}",
     );
 
     // Set the appropriate headers for the image response
@@ -156,7 +156,7 @@ router.get("/:id/get-driver-profile", async (req, res) => {
     const imagePath = path.join(
       __dirname,
       "images",
-      `${imageNameType}.${id}.${fileExtension}`,
+      `${imageNameType}${userId}.${fileExtension}`,
     ); //change name of each downloaded image to the appropriate user and type of image
     res.sendFile(imagePath);
 
@@ -167,7 +167,7 @@ router.get("/:id/get-driver-profile", async (req, res) => {
   }
 });
 
-router.post("/:id/profile-image", upload.single("image"), async (req, res) => {
+router.post("/profile-image", upload.single("image"), async (req, res) => {
   try {
     const { originalname, path } = req.file;
     const imageFsData = fs.readFileSync(path);
